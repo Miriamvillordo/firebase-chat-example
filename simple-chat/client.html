@@ -1,0 +1,56 @@
+<!doctype html>
+
+<html>
+
+<head>
+
+<script src='js/libs/firebase.js'></script>
+<script src='js/libs/jquery.min.js'></script>
+
+<link rel='stylesheet' type='text/css' href='css/styles.css'>
+    
+<title>iChat-client</title>
+
+</head>
+    
+<body>
+    
+    <div id='messagesDiv'></div>
+    
+    <input type='text' id='messageInput' placeholder='Message'>
+    
+    <script>
+        
+        var myDataRef = new Firebase('https://blazing-heat-966.firebaseio.com/');
+        
+        $('#messageInput').keypress(function (e)
+        {
+            var userName = 'iChat-client';
+            
+            if (e.keyCode == 13)
+            {
+                var msg = $('#messageInput').val();
+                
+                myDataRef.push({userName: userName, msg: msg});
+                
+                $('#messageInput').val('');
+            }
+        });
+        
+        myDataRef.on('child_added', function(snapshot)
+        {
+            var message = snapshot.val();
+            displayChatMessage(message.userName, message.msg);
+        });
+        
+        function displayChatMessage(userName, msg)
+        {
+            $('<div/>').text(msg).prepend($('<em/>').text(userName+': ')).appendTo($('#messagesDiv'));
+            
+            $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+        }
+        
+    </script>
+    
+</body>
+</html>
